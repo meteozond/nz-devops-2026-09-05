@@ -25,7 +25,7 @@ root password for all 4 machines; get it from `terraform output` in `../tf`.
 
 Open a team folder in its dev container (VS Code / `devcontainer` CLI). It uses
 the `alpine/ansible` image; on create it installs `netaddr`, `kubectl`, `k9s`,
-`nano`, `vim` and runs `prepare.sh` (galaxy install + update_known_hosts). The
+`helm`, `nano`, `vim` and runs `prepare.sh` (galaxy install + update_known_hosts). The
 image already ships `sshpass` and `ansible.posix`, so no extra host setup is
 needed. After the container is up, deploy: `ansible-playbook deploy_rke2.yaml -k`
 — it drops the kubeconfig into `~/.kube/config`, so `kubectl get nodes` / `k9s`
