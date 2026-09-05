@@ -1,5 +1,5 @@
 {
   "name": "team5 ansible",
   "image": "alpine/ansible",
-  "postCreateCommand": "apk add --no-cache py3-netaddr kubectl k9s nano vim"
+  "postCreateCommand": "apk add --no-cache py3-netaddr kubectl k9s nano vim && sh prepare.sh"
 }

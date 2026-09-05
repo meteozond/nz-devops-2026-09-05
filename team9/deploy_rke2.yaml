@@ -2,10 +2,37 @@
   hosts:
     - masters
     - workers
+  vars:
+    # Download kubeconfig straight into root's ~/.kube/config on the controller
+    # (the dev container), so kubectl/k9s work with no KUBECONFIG export.
+    rke2_download_kubeconf: true
+    rke2_download_kubeconf_path: "{{ lookup('env', 'HOME') }}/.kube"
+    rke2_download_kubeconf_file_name: config
+    # Make the API server cert valid for the master's FQDN (for external kubectl).
+    # rke2_api_ip is left at its default (node internal IP) so cluster
+    # registration over the internal network is unchanged.
+    rke2_additional_sans:
+      - "{{ groups['masters'][0] }}"
   pre_tasks:
     - name: Install apparmor (required by rke2)
       ansible.builtin.apt:
         name: apparmor
         update_cache: true
+
+    - name: Ensure ~/.kube exists on the controller
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: "0700"
   roles:
     - role: lablabs.rke2
+  post_tasks:
+    - name: Point kubeconfig at the master FQDN
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.replace:
+        path: "{{ lookup('env', 'HOME') }}/.kube/config"
+        regexp: 'https://(127\.0\.0\.1|[0-9.]+):6443'
+        replace: "https://{{ groups['masters'][0] }}:6443"

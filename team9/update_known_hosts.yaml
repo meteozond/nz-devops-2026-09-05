@@ -2,6 +2,14 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Ensure ~/.ssh exists on the control host
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.ssh"
+        state: directory
+        mode: "0700"
+
     - name: Remove existing known_hosts entry
       delegate_to: localhost
       ansible.builtin.known_hosts:
