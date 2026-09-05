@@ -1,0 +1,11 @@
+[masters]
+vm1.devops10.erix.me
+
+[workers]
+vm2.devops10.erix.me
+vm3.devops10.erix.me
+vm4.devops10.erix.me
+
+[k8s_cluster:children]
+masters
+workers

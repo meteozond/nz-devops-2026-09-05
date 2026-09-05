@@ -1,0 +1,12 @@
+- name: Deploy public key to root's authorized_keys
+  hosts: all
+  gather_facts: false
+  vars:
+    # Override with: -e pubkey_file=~/.ssh/id_rsa.pub
+    pubkey_file: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+  tasks:
+    - name: Add public key to root authorized_keys
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', pubkey_file) }}"

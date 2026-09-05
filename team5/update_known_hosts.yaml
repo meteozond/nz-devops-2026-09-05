@@ -1,0 +1,23 @@
+- name: Refresh inventory hosts in known_hosts (always remove, then re-add)
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Remove existing known_hosts entry
+      delegate_to: localhost
+      ansible.builtin.known_hosts:
+        name: "{{ inventory_hostname }}"
+        state: absent
+
+    - name: Scan host keys via ssh-keyscan
+      delegate_to: localhost
+      ansible.builtin.command: ssh-keyscan -T 5 {{ inventory_hostname }}
+      register: keyscan
+      changed_when: true
+
+    - name: Add freshly scanned keys (host taken from each line)
+      delegate_to: localhost
+      ansible.builtin.known_hosts:
+        name: "{{ item.split()[0] }}"
+        key: "{{ item }}"
+        state: present
+      loop: "{{ keyscan.stdout_lines | reject('match', '^#') | select('match', '.') | list }}"

@@ -1,0 +1,11 @@
+- name: Deploy RKE2
+  hosts:
+    - masters
+    - workers
+  pre_tasks:
+    - name: Install apparmor (required by rke2)
+      ansible.builtin.apt:
+        name: apparmor
+        update_cache: true
+  roles:
+    - role: lablabs.rke2
